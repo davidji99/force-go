@@ -3,6 +3,7 @@ package force
 import (
 	"fmt"
 	"github.com/davidji99/simpleresty"
+	"github.com/mitchellh/mapstructure"
 	"sync"
 	"time"
 )
@@ -214,6 +215,14 @@ type QueryResult struct {
 	TotalSize      int       `json:"totalSize,omitempty"`
 	Records        []SObject `json:"records,omitempty"`
 	NextRecordsURL string    `json:"nextRecordsUrl,omitempty"`
+}
+
+func (q *QueryResult) DecodeRecords(output interface{}) error {
+	decodeErr := mapstructure.Decode(q.Records, &output)
+	if decodeErr != nil {
+		return decodeErr
+	}
+	return nil
 }
 
 // Query executes a request to find SObjects.
