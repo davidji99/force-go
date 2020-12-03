@@ -3,7 +3,6 @@ package force
 import (
 	"fmt"
 	"github.com/davidji99/simpleresty"
-	"github.com/go-resty/resty/v2"
 	"sync"
 	"time"
 )
@@ -22,7 +21,7 @@ const (
 	MediaTypeJSON = "application/json"
 
 	// FormURLEncodedHeader
-	FormURLEncodedHeaderx = "application/x-www-form-urlencoded"
+	FormURLEncodedHeader = "application/x-www-form-urlencoded"
 )
 
 // A Client manages communication with the Salesforce Force API.
@@ -121,17 +120,21 @@ func (c *Client) authenticate() error {
 
 func (c *Client) oauth() (*TokenResponse, error) {
 	var tokenResponse *TokenResponse
-	req := &resty.Request{URL: DefaultLoginURL + "/services/oauth2/token", Method: "POST"}
-	req.SetFormData(map[string]string{
-		"grant_type":    "password",
-		"client_id":     c.oauthCred.ClientID,
-		"client_secret": c.oauthCred.ClientSecret, "username": c.oauthCred.Username,
-		"password": c.oauthCred.Password,
-	})
-	req.SetHeaders(map[string]string{"Accept": MediaTypeJSON, "Content-Type": FormURLEncodedHeaderx})
-	req.SetResult(&tokenResponse)
+	oClient := simpleresty.NewWithBaseURL(c.loginURL)
+	url := oClient.RequestURL("/services/oauth2/token")
 
-	_, err := c.http.Dispatch(req)
+	_, err := oClient.R().
+		SetFormData(map[string]string{
+			"grant_type":    "password",
+			"client_id":     c.oauthCred.ClientID,
+			"client_secret": c.oauthCred.ClientSecret,
+			"username":      c.oauthCred.Username,
+			"password":      c.oauthCred.Password,
+		}).
+		SetHeaders(map[string]string{"Accept": MediaTypeJSON, "Content-Type": FormURLEncodedHeader}).
+		SetResult(&tokenResponse).
+		Post(url)
+
 	if err != nil {
 		return nil, err
 	}

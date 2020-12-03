@@ -18,7 +18,7 @@ func TestNewClient_WithAccessToken(t *testing.T) {
 func TestNewClient_WithAccessTokenEmptyString(t *testing.T) {
 	client, err := force.New(
 		force.AccessToken(""),
-		force.InstanceURL("https://test.my.salesforce.com"))
+		force.InstanceURL("https://instance.my.salesforce.com"))
 	assert.NotNil(t, err)
 	assert.Nil(t, client)
 }
