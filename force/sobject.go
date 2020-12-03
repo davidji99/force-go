@@ -10,6 +10,11 @@ import "strings"
 // SObject is a single record/object in salesforce.
 type SObject map[string]interface{}
 
+// Get returns a named field from the SObject, or nil if its not present.
+func (s SObject) Get(k string) interface{} {
+	return s[strings.ToLower(k)]
+}
+
 // SObjectMetadata contains detailed metadata about a particular sObject.
 //
 // This fields defined in SObjectMetadata represent a cumulative/running list from all currently supported
