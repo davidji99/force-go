@@ -90,7 +90,7 @@ type oauthCred struct {
 	Password     string
 }
 
-// OAuthCred sets the credentials needed for oauth.
+// OAuthCred sets the credentials needed for OAuth.
 func OAuthCred(username, password, clientID, clientSecret string) Option {
 	return func(c *Client) error {
 		// Make sure supplied arguments are not empty string

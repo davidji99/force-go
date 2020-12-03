@@ -103,11 +103,11 @@ func (c *Client) authenticate() error {
 
 	// Validate to make sure oauthCred is defined
 	if c.oauthCred == nil {
-		return fmt.Errorf("no oauth credentials defined")
+		return fmt.Errorf("no OAuth credentials defined")
 	}
 
-	// Execute oauth
-	r, oauthErr := c.oauth()
+	// Execute OAuth
+	r, oauthErr := c.OAuth()
 	if oauthErr != nil {
 		return oauthErr
 	}
@@ -118,18 +118,24 @@ func (c *Client) authenticate() error {
 	return nil
 }
 
-func (c *Client) oauth() (*TokenResponse, error) {
+// OAuth submits an OAuth request.
+func (c *Client) OAuth() (*TokenResponse, error) {
+	return OAuth(c.loginURL, c.oauthCred.Username, c.oauthCred.Password, c.oauthCred.ClientID, c.oauthCred.ClientSecret)
+}
+
+// OAuth submits an OAuth request. This is a package exposed function.
+func OAuth(loginURL, username, password, clientID, clientSecret string) (*TokenResponse, error) {
 	var tokenResponse *TokenResponse
-	oClient := simpleresty.NewWithBaseURL(c.loginURL)
+	oClient := simpleresty.NewWithBaseURL(loginURL)
 	url := oClient.RequestURL("/services/oauth2/token")
 
 	_, err := oClient.R().
 		SetFormData(map[string]string{
 			"grant_type":    "password",
-			"client_id":     c.oauthCred.ClientID,
-			"client_secret": c.oauthCred.ClientSecret,
-			"username":      c.oauthCred.Username,
-			"password":      c.oauthCred.Password,
+			"client_id":     clientID,
+			"client_secret": clientSecret,
+			"username":      username,
+			"password":      password,
 		}).
 		SetHeaders(map[string]string{"Accept": MediaTypeJSON, "Content-Type": FormURLEncodedHeader}).
 		SetResult(&tokenResponse).
