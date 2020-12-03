@@ -1,0 +1,44 @@
+name: tests
+on: [pull_request, push]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        go-version: [1.14.x, 1.15.x]
+        platform: [ubuntu-latest]
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - uses: actions/setup-go@v1
+        with:
+          go-version: ${{ matrix.go-version }}
+      - uses: actions/checkout@v2
+
+      - name: Cache go modules
+        uses: actions/cache@v1
+        with:
+          path: ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('go.sum') }}
+          restore-keys: ${{ runner.os }}-go-
+
+      - name: Run go fmt
+        if: runner.os != 'Windows'
+        run: |
+          go fmt ./...
+          git diff --exit-code; code=$?; git checkout -- .; (exit $code)
+
+      - name: Run go vet
+        run: go vet ./...
+
+      - name: Ensure generating accessors produces a zero diff
+        shell: bash
+        run: cd force && go run gen-accessors.go && git diff --exit-code; code=$?; git checkout -- .; (exit $code)
+
+      - name: Run tests
+        run: go test ./...
+        env:
+          OAUTH_USER: ${{ secrets.OAUTH_USER }}
+          OAUTH_PASSWORD: ${{ secrets.OAUTH_PASSWORD }}
+          OAUTH_CLIENT_ID: ${{ secrets.OAUTH_CLIENT_ID }}
+          OAUTH_CLIENT_SECRET:  ${{ secrets.OAUTH_CLIENT_SECRET }}
