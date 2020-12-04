@@ -3,6 +3,7 @@ package force
 import (
 	"fmt"
 	"github.com/davidji99/simpleresty"
+	"github.com/mitchellh/mapstructure"
 	"sync"
 	"time"
 )
@@ -216,9 +217,17 @@ type QueryResult struct {
 	NextRecordsURL string    `json:"nextRecordsUrl,omitempty"`
 }
 
+func (q *QueryResult) DecodeRecords(output interface{}) error {
+	decodeErr := mapstructure.Decode(q.Records, &output)
+	if decodeErr != nil {
+		return decodeErr
+	}
+	return nil
+}
+
 // Query executes a request to find SObjects.
 func (c *Client) Query(q *QueryRequest) (*QueryResult, *simpleresty.Response, error) {
-	var result QueryResult
+	var result *QueryResult
 	urlStr, urlStrErr := c.http.RequestURLWithQueryParams(fmt.Sprintf("/services/data/%s/query", c.apiVersion), q)
 	if urlStrErr != nil {
 		return nil, nil, urlStrErr
@@ -229,7 +238,31 @@ func (c *Client) Query(q *QueryRequest) (*QueryResult, *simpleresty.Response, er
 		return nil, nil, getErr
 	}
 
-	return &result, response, nil
+	return result, response, nil
+}
+
+// Query executes a request to find SObjects.
+func (c *Client) QueryAndDecode(q *QueryRequest, output interface{}) (*QueryResult, *simpleresty.Response, error) {
+	result, response, queryErr := c.Query(q)
+	if queryErr != nil {
+		return nil, nil, queryErr
+	}
+
+	if output != nil {
+		if len(result.Records) == 1 {
+			decodeErr := mapstructure.Decode(result.Records[0], &output)
+			if decodeErr != nil {
+				return nil, nil, fmt.Errorf("unable to decode query results to specified interface: %v", decodeErr)
+			}
+		} else {
+			decodeErr := mapstructure.Decode(result.Records, &output)
+			if decodeErr != nil {
+				return nil, nil, fmt.Errorf("unable to decode query results to specified interface: %v", decodeErr)
+			}
+		}
+	}
+
+	return result, response, nil
 }
 
 // GetBaseSObjectQuery describes the object and then constructs the base select query.
