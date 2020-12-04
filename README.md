@@ -1,5 +1,5 @@
 # force-go
-A G client for the Salesforce REST API.
+A Go client for the Salesforce REST API.
 
 ## Install
 
