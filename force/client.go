@@ -249,9 +249,16 @@ func (c *Client) QueryAndDecode(q *QueryRequest, output interface{}) (*QueryResu
 	}
 
 	if output != nil {
-		decodeErr := mapstructure.Decode(result.Records, &output)
-		if decodeErr != nil {
-			return nil, nil, fmt.Errorf("unable to decode query results to specified interface")
+		if len(result.Records) == 1 {
+			decodeErr := mapstructure.Decode(result.Records[0], &output)
+			if decodeErr != nil {
+				return nil, nil, fmt.Errorf("unable to decode query results to specified interface: %v", decodeErr)
+			}
+		} else {
+			decodeErr := mapstructure.Decode(result.Records, &output)
+			if decodeErr != nil {
+				return nil, nil, fmt.Errorf("unable to decode query results to specified interface: %v", decodeErr)
+			}
 		}
 	}
 
