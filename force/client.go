@@ -127,6 +127,7 @@ func (c *Client) OAuth() (*TokenResponse, error) {
 // OAuth submits an OAuth request. This is a package exposed function.
 func OAuth(loginURL, username, password, clientID, clientSecret string) (*TokenResponse, error) {
 	var tokenResponse *TokenResponse
+	var tokenErrResponse *TokenErrorResponse
 	oClient := simpleresty.NewWithBaseURL(loginURL)
 	url := oClient.RequestURL("/services/oauth2/token")
 
@@ -140,10 +141,15 @@ func OAuth(loginURL, username, password, clientID, clientSecret string) (*TokenR
 		}).
 		SetHeaders(map[string]string{"Accept": MediaTypeJSON, "Content-Type": FormURLEncodedHeader}).
 		SetResult(&tokenResponse).
+		SetError(&tokenErrResponse).
 		Post(url)
 
 	if err != nil {
 		return nil, err
+	}
+
+	if tokenErrResponse != nil {
+		return nil, fmt.Errorf("Response code: %s. Description: %s", tokenErrResponse.ErrorCode, tokenErrResponse.Description)
 	}
 
 	return tokenResponse, nil

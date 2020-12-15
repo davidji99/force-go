@@ -9,3 +9,9 @@ type TokenResponse struct {
 	Signature   *string `json:"signature"`
 	TokenType   *string `json:"token_type"`
 }
+
+// TokenErrorResponse is the error response returned from an OAuth request.
+type TokenErrorResponse struct {
+	ErrorCode   string `json:"error"`
+	Description string `json:"error_description"`
+}
