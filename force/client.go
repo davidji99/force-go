@@ -108,9 +108,14 @@ func (c *Client) authenticate() error {
 	}
 
 	// Execute OAuth
-	r, oauthErr := c.OAuth()
-	if oauthErr != nil {
-		return oauthErr
+	r, oauthRespErr, responseErr := c.OAuth()
+	if responseErr != nil {
+		return responseErr
+	}
+
+	if oauthRespErr != nil {
+		return fmt.Errorf("unable to authenticate: Error code %s | Error Description: %s",
+			oauthRespErr.ErrorCode.ToString(), oauthRespErr.Description)
 	}
 
 	c.instanceURL = r.GetInstanceURL()
@@ -120,18 +125,18 @@ func (c *Client) authenticate() error {
 }
 
 // OAuth submits an OAuth request.
-func (c *Client) OAuth() (*TokenResponse, error) {
+func (c *Client) OAuth() (*TokenResponse, *TokenErrorResponse, error) {
 	return OAuth(c.loginURL, c.oauthCred.Username, c.oauthCred.Password, c.oauthCred.ClientID, c.oauthCred.ClientSecret)
 }
 
 // OAuth submits an OAuth request. This is a package exposed function.
-func OAuth(loginURL, username, password, clientID, clientSecret string) (*TokenResponse, error) {
+func OAuth(loginURL, username, password, clientID, clientSecret string) (*TokenResponse, *TokenErrorResponse, error) {
 	var tokenResponse *TokenResponse
 	var tokenErrResponse *TokenErrorResponse
 	oClient := simpleresty.NewWithBaseURL(loginURL)
 	url := oClient.RequestURL("/services/oauth2/token")
 
-	_, err := oClient.R().
+	_, postErr := oClient.R().
 		SetFormData(map[string]string{
 			"grant_type":    "password",
 			"client_id":     clientID,
@@ -144,15 +149,7 @@ func OAuth(loginURL, username, password, clientID, clientSecret string) (*TokenR
 		SetError(&tokenErrResponse).
 		Post(url)
 
-	if err != nil {
-		return nil, err
-	}
-
-	if tokenErrResponse != nil {
-		return nil, fmt.Errorf("Response code: %s. Description: %s", tokenErrResponse.ErrorCode, tokenErrResponse.Description)
-	}
-
-	return tokenResponse, nil
+	return tokenResponse, tokenErrResponse, postErr
 }
 
 func (c *Client) setupClient(accessToken string) {
