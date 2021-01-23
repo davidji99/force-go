@@ -422,7 +422,7 @@ type SObjectFieldMetadata struct {
 	Sortable *bool `json:"sortable,omitempty"`
 
 	// Type
-	Type *string `json:"type,omitempty"`
+	Type FieldDataType `json:"type,omitempty"`
 
 	// Unique indicates whether the value must be unique true) or not false).
 	Unique *bool `json:"unique,omitempty"`

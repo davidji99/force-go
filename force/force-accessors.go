@@ -511,14 +511,6 @@ func (s *SObjectFieldMetadata) GetSortable() bool {
 	return *s.Sortable
 }
 
-// GetType returns the Type field if it's non-nil, zero value otherwise.
-func (s *SObjectFieldMetadata) GetType() string {
-	if s == nil || s.Type == nil {
-		return ""
-	}
-	return *s.Type
-}
-
 // GetUnique returns the Unique field if it's non-nil, zero value otherwise.
 func (s *SObjectFieldMetadata) GetUnique() bool {
 	if s == nil || s.Unique == nil {

@@ -52,7 +52,7 @@ type Client struct {
 	apiVersion string
 
 	// oauthCred
-	oauthCred *oauthCred
+	oauthCred *oauthCredentials
 
 	// accessToken
 	accessToken string
@@ -126,11 +126,11 @@ func (c *Client) authenticate() error {
 
 // OAuth submits an OAuth request.
 func (c *Client) OAuth() (*TokenResponse, *TokenErrorResponse, error) {
-	return OAuth(c.loginURL, c.oauthCred.Username, c.oauthCred.Password, c.oauthCred.ClientID, c.oauthCred.ClientSecret)
+	return OAuth(c.loginURL, c.oauthCred)
 }
 
 // OAuth submits an OAuth request. This is a package exposed function.
-func OAuth(loginURL, username, password, clientID, clientSecret string) (*TokenResponse, *TokenErrorResponse, error) {
+func OAuth(loginURL string, o *oauthCredentials) (*TokenResponse, *TokenErrorResponse, error) {
 	var tokenResponse *TokenResponse
 	var tokenErrResponse *TokenErrorResponse
 	oClient := simpleresty.NewWithBaseURL(loginURL)
@@ -139,10 +139,10 @@ func OAuth(loginURL, username, password, clientID, clientSecret string) (*TokenR
 	_, postErr := oClient.R().
 		SetFormData(map[string]string{
 			"grant_type":    "password",
-			"client_id":     clientID,
-			"client_secret": clientSecret,
-			"username":      username,
-			"password":      password,
+			"client_id":     o.ClientID,
+			"client_secret": o.ClientSecret,
+			"username":      o.Username,
+			"password":      fmt.Sprintf("%s%s", o.Password, o.SecurityToken),
 		}).
 		SetHeaders(map[string]string{"Accept": MediaTypeJSON, "Content-Type": FormURLEncodedHeader}).
 		SetResult(&tokenResponse).

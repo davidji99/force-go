@@ -1,9 +1,9 @@
 package test
 
 import (
+	"fmt"
 	"github.com/davidji99/force-go/force"
 	"github.com/stretchr/testify/assert"
-	"os"
 	"testing"
 )
 

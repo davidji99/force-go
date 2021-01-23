@@ -1,5 +1,14 @@
 package force
 
+// oauthCredentials represents the credentials needed to initiate an OAuth request.
+type oauthCredentials struct {
+	ClientID      string
+	ClientSecret  string
+	Username      string
+	Password      string
+	SecurityToken string
+}
+
 // TokenResponse represents the response returned from making an OAuth request.
 type TokenResponse struct {
 	ID          *string `json:"id"`
