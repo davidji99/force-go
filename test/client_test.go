@@ -1,9 +1,9 @@
 package test
 
 import (
-	"fmt"
 	"github.com/davidji99/force-go/force"
 	"github.com/stretchr/testify/assert"
+	"os"
 	"testing"
 )
 
@@ -29,6 +29,7 @@ func TestNewClient_OAuth(t *testing.T) {
 		os.Getenv("OAUTH_PASSWORD"),
 		os.Getenv("OAUTH_CLIENT_ID"),
 		os.Getenv("OAUTH_CLIENT_SECRET"),
+		"",
 	))
 	assert.Nil(t, err)
 	assert.NotNil(t, client)
