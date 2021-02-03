@@ -220,6 +220,12 @@ type QueryResult struct {
 	NextRecordsURL string    `json:"nextRecordsUrl,omitempty"`
 }
 
+// QueryErrorResult represents the error response returned from a query request.
+type QueryErrorResult struct {
+	Message   string `json:"message,omitempty"`
+	ErrorCode string `json:"errorCode,omitempty"`
+}
+
 func (q *QueryResult) DecodeRecords(output interface{}) error {
 	decodeErr := mapstructure.Decode(q.Records, &output)
 	if decodeErr != nil {
