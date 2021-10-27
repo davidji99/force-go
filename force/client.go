@@ -129,7 +129,7 @@ func (c *Client) OAuth() (*TokenResponse, *TokenErrorResponse, error) {
 	return OAuth(c.loginURL, c.oauthCred)
 }
 
-// OAuth submits an OAuth request. This is a package exposed function.
+// OAuth submits an OAuth request.
 func OAuth(loginURL string, o *oauthCredentials) (*TokenResponse, *TokenErrorResponse, error) {
 	var tokenResponse *TokenResponse
 	var tokenErrResponse *TokenErrorResponse
@@ -144,6 +144,24 @@ func OAuth(loginURL string, o *oauthCredentials) (*TokenResponse, *TokenErrorRes
 			"username":      o.Username,
 			"password":      fmt.Sprintf("%s%s", o.Password, o.SecurityToken),
 		}).
+		SetHeaders(map[string]string{"Accept": MediaTypeJSON, "Content-Type": FormURLEncodedHeader}).
+		SetResult(&tokenResponse).
+		SetError(&tokenErrResponse).
+		Post(url)
+
+	return tokenResponse, tokenErrResponse, postErr
+}
+
+// OAuthCustom is the same as the OAuth function but provides the ability to pass in the entire
+// form parameters.
+func OAuthCustom(loginURL string, params map[string]string) (*TokenResponse, *TokenErrorResponse, error) {
+	var tokenResponse *TokenResponse
+	var tokenErrResponse *TokenErrorResponse
+	oClient := simpleresty.NewWithBaseURL(loginURL)
+	url := oClient.RequestURL("/services/oauth2/token")
+
+	_, postErr := oClient.R().
+		SetFormData(params).
 		SetHeaders(map[string]string{"Accept": MediaTypeJSON, "Content-Type": FormURLEncodedHeader}).
 		SetResult(&tokenResponse).
 		SetError(&tokenErrResponse).
@@ -250,7 +268,7 @@ func (c *Client) Query(q *QueryRequest) (*QueryResult, *simpleresty.Response, er
 	return result, response, nil
 }
 
-// Query executes a request to find SObjects.
+// QueryAndDecode executes a request to find SObjects and unmarshalls the result into the supplied interface.
 func (c *Client) QueryAndDecode(q *QueryRequest, output interface{}) (*QueryResult, *simpleresty.Response, error) {
 	result, response, queryErr := c.Query(q)
 	if queryErr != nil {
