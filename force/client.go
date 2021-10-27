@@ -142,7 +142,7 @@ func OAuth(loginURL string, o *OAuthCredentials) (*TokenResponse, *TokenErrorRes
 			"client_id":     o.ClientID,
 			"client_secret": o.ClientSecret,
 			"username":      o.Username,
-			"password":      fmt.Sprintf("%s%s", o.Password, o.SecurityToken),
+			"password":      o.Password,
 		}).
 		SetHeaders(map[string]string{"Accept": MediaTypeJSON, "Content-Type": FormURLEncodedHeader}).
 		SetResult(&tokenResponse).

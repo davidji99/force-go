@@ -6,7 +6,6 @@ type OAuthCredentials struct {
 	ClientSecret  string
 	Username      string
 	Password      string
-	SecurityToken string
 }
 
 // TokenResponse represents the response returned from making an OAuth request.
