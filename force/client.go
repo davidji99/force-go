@@ -130,7 +130,7 @@ func (c *Client) OAuth() (*TokenResponse, *TokenErrorResponse, error) {
 }
 
 // OAuth submits an OAuth request.
-func OAuth(loginURL string, o *oauthCredentials) (*TokenResponse, *TokenErrorResponse, error) {
+func OAuth(loginURL string, o *OAuthCredentials) (*TokenResponse, *TokenErrorResponse, error) {
 	var tokenResponse *TokenResponse
 	var tokenErrResponse *TokenErrorResponse
 	oClient := simpleresty.NewWithBaseURL(loginURL)

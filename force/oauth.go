@@ -1,7 +1,7 @@
 package force
 
-// oauthCredentials represents the credentials needed to initiate an OAuth request.
-type oauthCredentials struct {
+// OAuthCredentials represents the credentials needed to initiate an OAuth request.
+type OAuthCredentials struct {
 	ClientID      string
 	ClientSecret  string
 	Username      string
