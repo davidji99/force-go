@@ -985,6 +985,22 @@ func (t *TokenResponse) GetIssuedAt() string {
 	return *t.IssuedAt
 }
 
+// GetRefreshToken returns the RefreshToken field if it's non-nil, zero value otherwise.
+func (t *TokenResponse) GetRefreshToken() string {
+	if t == nil || t.RefreshToken == nil {
+		return ""
+	}
+	return *t.RefreshToken
+}
+
+// GetScope returns the Scope field if it's non-nil, zero value otherwise.
+func (t *TokenResponse) GetScope() string {
+	if t == nil || t.Scope == nil {
+		return ""
+	}
+	return *t.Scope
+}
+
 // GetSignature returns the Signature field if it's non-nil, zero value otherwise.
 func (t *TokenResponse) GetSignature() string {
 	if t == nil || t.Signature == nil {

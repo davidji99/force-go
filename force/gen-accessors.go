@@ -3,6 +3,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file (https://github.com/google/go-github/blob/master/LICENSE).
 
+//go:build ignore
 // +build ignore
 
 // gen-accessors generates accessor methods for structs with pointer fields.
