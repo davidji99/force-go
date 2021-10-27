@@ -52,7 +52,7 @@ type Client struct {
 	apiVersion string
 
 	// oauthCred
-	oauthCred *oauthCredentials
+	oauthCred *OAuthCredentials
 
 	// accessToken
 	accessToken string

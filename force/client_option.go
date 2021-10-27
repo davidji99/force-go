@@ -83,10 +83,7 @@ func AccessToken(t string) Option {
 }
 
 // OAuthCred sets the credentials needed for OAuth.
-//
-// If the security token is not required for your OAuth configuration,
-// please pass in an empty string.
-func OAuthCred(username, password, clientID, clientSecret, securityToken string) Option {
+func OAuthCred(username, password, clientID, clientSecret string) Option {
 	return func(c *Client) error {
 		// Make sure supplied arguments are not empty string aside from the security token
 		args := []string{username, password, clientID, clientSecret}
@@ -96,12 +93,11 @@ func OAuthCred(username, password, clientID, clientSecret, securityToken string)
 			}
 		}
 
-		c.oauthCred = &oauthCredentials{
+		c.oauthCred = &OAuthCredentials{
 			ClientID:      clientID,
 			ClientSecret:  clientSecret,
 			Username:      username,
 			Password:      password,
-			SecurityToken: securityToken,
 		}
 		return nil
 	}
